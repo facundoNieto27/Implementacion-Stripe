@@ -1,10 +1,8 @@
 import { configDotenv } from "dotenv";
 import Stripe from "stripe";
 
-
 configDotenv();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 
 
 const createPaymentMethod = async (customerId, paymentMethodToken) => {
@@ -22,14 +20,18 @@ const createPaymentMethod = async (customerId, paymentMethodToken) => {
       },
     });
     console.log("Payment method created and attached to customer:", paymentMethod.id);
-    // Return the created payment method
+    
     return paymentMethod;
   }
   catch (error) {
     console.error("Error creating payment method:", error);
     throw error;
-  }
+  } 
+  //createPaymentMethod
+  //Crea un nuevo método de pago (por ejemplo, una tarjeta) en Stripe y lo asocia (adjunta) a un cliente.
+  //Además, lo configura como método de pago predeterminado para ese cliente.
 }
+
 
 const createPayment = async (paymentMethodId, customerId) => { 
   try {
@@ -58,26 +60,13 @@ const createCustomer = async (email, name) => {
       email: email,
       name: name,
     });
-    console.log(customer.name, "Customer created:", customer.id);
+    console.log("Customer created: ",customer.name ,", id: ",  customer.id);
     return customer;
   } catch (error) {
     console.error("Error creating customer:", error);
     throw error;
   }
 }
-
-//asociar metodo de pago a un usuario
-
-// (async () => {
-//   try {
-//     const customerId = "cus_SRKvWd8lDHBOGn"; // Replace with your customer ID
-//     const paymentMethodId = "pm_1N4z2e2eZvKYlo2C0d3f5g7H"; // Replace with your payment method ID
-//     await addPaymentMethodToCustomer(customerId, paymentMethodId);
-//     console.log("Payment method added to customer successfully");
-//   } catch (error) {
-//     console.error("Error adding payment method to customer:", error);
-//   }
-// })();
 
 const addPaymentMethodToCustomer = async (customerId, paymentMethodId) => {
   try {
@@ -94,6 +83,9 @@ const addPaymentMethodToCustomer = async (customerId, paymentMethodId) => {
     console.error("Error adding payment method to customer:", error);
     throw error;
   }
+//addPaymentMethodToCustomer
+//Solo asocia (adjunta) un método de pago existente (ya creado previamente) a un cliente y lo configura como predeterminado.
+//No crea un nuevo método de pago.
 }
 
 // prueba de crear un pago con un cliente y un metodo de pago

@@ -1,7 +1,9 @@
 import Stripe from "stripe";
+import { configDotenv } from 'dotenv';
 
 class StripePaymentService {
   constructor() {
+    configDotenv();
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   }
 

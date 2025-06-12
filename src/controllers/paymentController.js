@@ -1,4 +1,7 @@
 import StripePaymentService from '../services/stripeService.js';
+import { configDotenv } from 'dotenv';
+
+configDotenv();
 
 const stripeService = new StripePaymentService();
 

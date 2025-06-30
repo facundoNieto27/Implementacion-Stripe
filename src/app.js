@@ -19,6 +19,12 @@ app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 // Middleware para parsear JSON (para todas las demás rutas)
 app.use(express.json());
 
+// Middleware de debugging para registrar las solicitudes
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} --> [${req.method}] ${req.url}`);
+    next();
+});
+
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, '../public')));
 

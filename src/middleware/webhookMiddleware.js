@@ -1,6 +1,8 @@
 import StripePaymentService from '../services/stripeService.js';
+import EmailService from '../services/emailService.js';
 
 const stripeService = new StripePaymentService();
+const emailService = new EmailService();
 
 export const handleStripeWebhook = async (req, res) => {
   let event;
@@ -44,26 +46,31 @@ export const handleStripeWebhook = async (req, res) => {
   res.json({ received: true });
 };
 
-// Funciones auxiliares para manejar cada tipo de evento
 async function handleSuccessfulPayment(paymentIntent) {
-  try {
-    // Aquí implementarías tu lógica de negocio:
-    // - Actualizar estado del pedido en la base de datos
-    // - Enviar email de confirmación
-    // - Activar servicios
-    // - etc.
-    
-    console.log(`Procesando pago exitoso: ${paymentIntent.id}`);
-    console.log(`Monto: ${paymentIntent.amount / 100} ${paymentIntent.currency.toUpperCase()}`);
-    console.log(`Cliente: ${paymentIntent.customer}`);
-    
-    // Ejemplo de lo que podrías hacer:
-    // await updateOrderStatus(paymentIntent.metadata.order_id, 'paid');
-    // await sendConfirmationEmail(paymentIntent.customer);
-    
-  } catch (error) {
-    console.error('Error procesando pago exitoso:', error);
-  }
+    try {
+        console.log(`Procesando pago exitoso: ${paymentIntent.id}`);
+        console.log(`Monto: ${paymentIntent.amount / 100} ${paymentIntent.currency.toUpperCase()}`);
+        console.log(`Cliente: ${paymentIntent.customer}`);
+
+        // Obtener información del cliente
+        const customer = await stripeService.stripe.customers.retrieve(paymentIntent.customer);
+        
+        // Enviar email de confirmación
+        await emailService.sendPaymentConfirmation(
+            customer.email,
+            customer.name,
+            {
+                id: paymentIntent.id,
+                amount: paymentIntent.amount,
+                currency: paymentIntent.currency
+            }
+        );
+
+        console.log('✅ Email de confirmación enviado a:', customer.email);
+
+    } catch (error) {
+        console.error('Error procesando pago exitoso:', error);
+    }
 }
 
 async function handleFailedPayment(paymentIntent) {
